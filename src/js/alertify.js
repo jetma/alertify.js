@@ -54,7 +54,7 @@
                     ok: "<button class='ok' tabindex='1'>{{ok}}</button>",
                     cancel: "<button class='cancel' tabindex='2'>{{cancel}}</button>"
                 },
-                input: "<input type='text'>",
+                input: "<input type='{{type}}'>",
                 message: "<p class='msg'>{{message}}</p>",
                 log: "<div class='{{class}}'>{{message}}</div>"
             },
@@ -78,16 +78,22 @@
              * @return {String}         An HTML string of the message box
              */
             build: function(item) {
-
+                // prompt's message can be object and set input type
+                var message = item.message;
+                if(item.message !== null && typeof item.message === 'object') {
+                    message = item.message.message || item.message.msg || '';
+                }
+                
                 var btnTxt = this.dialogs.buttons.ok;
-                var html = "<div class='dialog'>" + "<div>" + this.dialogs.message.replace("{{message}}", item.message);
+                var html = "<div class='dialog'>" + "<div>" + this.dialogs.message.replace("{{message}}", message);
 
                 if(item.type === "confirm" || item.type === "prompt") {
                     btnTxt = this.dialogs.buttons.cancel + this.dialogs.buttons.ok;
                 }
 
                 if (item.type === "prompt") {
-                    html += this.dialogs.input;
+                    var type = item.message.type || 'text';
+                    html += this.dialogs.input.replace("{{type}}", type);
                 }
 
                 html = (html + this.dialogs.buttons.holder + "</div>" + "</div>")
